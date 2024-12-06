@@ -1,7 +1,6 @@
-import  { useState, useEffect, useCallback } from 'react';
-import { TemplateCard } from './TemplateCard';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchTemplates } from '../../lib/api';
-
+import { TemplateCard } from './TemplateCard';
 export function TemplateGrid() {
   const [sortBy, setSortBy] = useState('newest');
   const [templates, setTemplates] = useState([]);
@@ -42,6 +41,21 @@ export function TemplateGrid() {
           </div>
         ) : error ? (
           <div className="text-center text-red-500 py-8">{error}</div>
+        ) : templates.length === 0 ? (
+          <div className="text-center text-gray-600 py-8">
+            <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-6 rounded-xl shadow-lg">
+              <h2 className="text-3xl font-semibold text-white mb-4">No Templates Found</h2>
+              <p className="text-lg text-gray-200">It looks like there are no templates available right now. Check back later!</p>
+              <div className="mt-4">
+                <Link 
+                  to="/create-template" 
+                  className="inline-block bg-primary-500 text-white px-6 py-2 rounded-full text-lg font-medium hover:bg-primary-600 transition duration-300"
+                >
+                  Create a New Template
+                </Link>
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
