@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
 import { router as templatesRouter } from './routes/templates.js';
 import { router as commentsRouter } from './routes/comments.js';
 import { router as favoritesRouter } from './routes/favorites.js';
@@ -12,10 +13,11 @@ import { authMiddleware } from './middleware/auth.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5777;
+const PORT = process.env.PORT || 5003;
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json({ limit: '20mb' })); // Adjust the size limit as needed
+app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // Routes

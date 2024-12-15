@@ -9,6 +9,7 @@ import { ThinkingDots } from './ThinkingDots';
 import { ChatMessage } from './ChatMessage';
 
 
+
 const INITIAL_MESSAGE = {
   id: '0',
   type: 'bot' ,
@@ -21,7 +22,7 @@ export function ChatBot() {
   const [messages, setMessages] = useState([INITIAL_MESSAGE]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { searchResults, search } = useTemplateSearch(templates);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const { position, startMovement, stopMovement } = useRandomMovement();
@@ -75,7 +76,7 @@ export function ChatBot() {
     <>
       {!isOpen && (
         <div 
-          className="fixed transition-all duration-300 ease-out"
+          className="fixed transition-all z-50 duration-300 ease-out"
           style={{
             bottom: `${position.y}px`,
             right: `${position.x}px`,
@@ -98,7 +99,7 @@ export function ChatBot() {
       )}
 
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-[400px] bg-white dark:bg-dark-200 rounded-2xl shadow-2xl border border-primary-100 dark:border-dark-300 overflow-hidden">
+        <div className="fixed z-50 bottom-6 right-6 w-[400px] bg-white dark:bg-dark-200 rounded-2xl shadow-2xl border border-primary-100 dark:border-dark-300 overflow-hidden">
           <div className="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-500 bg-[length:200%_100%] animate-gradient p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-white dark:bg-dark-100 p-2 rounded-full animate-bounce">

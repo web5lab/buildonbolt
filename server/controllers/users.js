@@ -10,11 +10,13 @@ const __dirname = path.dirname(__filename);
 
 export const uploadAvatar = async (req, res) => {
   try {
+    
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
     const { userId } = req;
+    console.log("rew",userId);
     const userIndex = users.findIndex(u => u.id === userId);
     
     if (userIndex === -1) {
@@ -95,6 +97,28 @@ export const updateProfile = async (req, res) => {
 
     res.json(users[userIndex]);
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const serveAvatar = (req, res) => {
+  try {
+    const { filename } = req.params;
+    
+    // Validate filename to prevent directory traversal attacks
+    if (!filename || !filename.match(/^[\w-]+\.(jpg|jpeg|png)$/)) {
+      return res.status(400).json({ message: 'Invalid filename' });
+    }
+
+    const avatarPath = path.join(__dirname,  '..', 'uploads', 'avatars', filename);
+    // Check if file exists
+    if (!fs.existsSync(avatarPath)) {
+      return res.status(404).json({ message: 'Avatar not found' });
+    }
+
+    // Serve the file
+    res.sendFile(avatarPath);
+  } catch (error) {
+    console.error('Error serving avatar:', error);
     res.status(500).json({ message: error.message });
   }
 };

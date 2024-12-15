@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Share2, User, Flag, Rocket, Eye } from 'lucide-react';
+import { Share2, User, Flag, Rocket, Eye, MessageSquare, Github, Twitter, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ShareTemplate } from './ShareTemplate';
-import { ReportTemplate } from './ReportTemplate';
-import { PreviewModal } from './PreviewModal';
-import { TechStack } from './TechStack';
+import { ShareTemplate } from './ShareTemplate.jsx';
+import { ReportTemplate } from './ReportTemplate.jsx';
+import { PreviewModal } from './PreviewModal.jsx';
+import { CommentList } from '../comments/CommentList.jsx';
+import { TechStack } from './TechStack.jsx';
+import { useAuth } from '../../hooks/useAuth.js';
+import { LoginModal } from '../auth/LoginModal.jsx';
+import { toggleFavorite } from '../../lib/api.js';
+
+import { addComment } from '../../lib/api.js';
 
 
 
@@ -21,13 +27,45 @@ export function TemplateCard({
   const [showShareModal, setShowShareModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { user } = useAuth();
+  const [error, setError] = useState(null);
+
+  const handleAddComment = async (content) => {
+    if (!user) return;
+    try {
+      setError(null);
+      const newComment = await addComment(id, content);
+      setComments(prev => [...prev, newComment]);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to add comment');
+    }
+  };
 
   const handleReport = async (data) => {
     console.log('Report submitted:', data);
   };
 
   const handleLaunchInBolt = () => {
-    window.open('https://bolt.new/~/github.com/web5lab/buildonbolt', '_blank');
+    window.open('https://bolt.new', '_blank');
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      const response = await toggleFavorite(id);
+      setIsFavorited(response.favorited);
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      setError(error instanceof Error ? error.message : 'Failed to toggle favorite');
+    }
   };
 
   return (
@@ -42,6 +80,15 @@ export function TemplateCard({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleToggleFavorite();
+            }}
+            className={`absolute top-4 left-4 p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${isFavorited ? 'bg-red-500 text-white' : 'bg-white/90 dark:bg-dark-200/90 hover:bg-white dark:hover:bg-dark-200'}`}
+          >
+            <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+          </button>
         </Link>
         
         <div className="absolute top-4 right-4 flex gap-2">
@@ -84,11 +131,33 @@ export function TemplateCard({
           <TechStack technologies={techStack} />
 
           <div className="flex items-center gap-2">
-            <div className="bg-gradient-to-r from-primary-100 to-primary-50 dark:from-primary-900/20 dark:to-primary-800/10 p-2 rounded-xl flex items-center gap-2 group-hover:scale-105 transition-transform">
+            <div className="bg-gradient-to-r from-primary-100 to-primary-50 dark:from-primary-900/20 dark:to-primary-800/10 p-2 rounded-xl flex items-center gap-4 group-hover:scale-105 transition-transform">
               <div className="bg-primary-500/10 dark:bg-primary-400/10 p-1.5 rounded-full">
                 <User className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               </div>
               <span className="text-sm font-medium text-primary-700 dark:text-primary-300">{author}</span>
+              <div className="flex items-center gap-2">
+                {author === 'BoltTeam' && (
+                  <div className="flex items-center gap-2">
+                    <a href="https://github.com/boltteam" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:text-primary-600">
+                      <Github className="w-4 h-4" />
+                    </a>
+                    <a href="https://twitter.com/boltteam" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:text-primary-600">
+                      <Twitter className="w-4 h-4" />
+                    </a>
+                    <a href="https://twitter.com/boltteam" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:text-primary-600">
+                      <Twitter className="w-4 h-4" />
+                    </a>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setShowComments(!showComments)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>{comments.length}</span>
+              </button>
             </div>
           </div>
 
@@ -102,6 +171,12 @@ export function TemplateCard({
             </button>
           </div>
         </div>
+        
+        {showComments && (
+          <div className="p-6 border-t border-primary-100 dark:border-dark-300">
+            <CommentList comments={comments} onAddComment={handleAddComment} />
+          </div>
+        )}
       </div>
 
       {showShareModal && (
@@ -124,6 +199,10 @@ export function TemplateCard({
           url={previewUrl}
           onClose={() => setShowPreview(false)}
         />
+      )}
+
+      {showLoginModal && (
+        <LoginModal onClose={() => setShowLoginModal(false)} />
       )}
     </>
   );

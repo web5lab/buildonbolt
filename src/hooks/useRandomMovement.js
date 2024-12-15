@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 
+
 export function useRandomMovement() {
   const [position, setPosition] = useState({ x: 24, y: 24 });
   const [intervalId, setIntervalId] = useState(null);

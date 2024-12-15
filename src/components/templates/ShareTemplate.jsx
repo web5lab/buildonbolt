@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Share2, Link2, Twitter, Facebook, Copy, Check, Mail, Linkedin, MessageCircle, X } from 'lucide-react';;
+import { Share2, Link2, Twitter, Facebook, Copy, Check, Mail, Linkedin, MessageCircle, X } from 'lucide-react';
 import { useShareTemplate } from '../../hooks/useShareTemplate';
+
 
 
 export function ShareTemplate({ template, onClose }) {

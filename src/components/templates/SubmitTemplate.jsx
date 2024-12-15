@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Upload, HelpCircle, CircleX  } from 'lucide-react';
+import { Loader2, Upload, HelpCircle } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { createTemplate } from '../../lib/api';
 
+import { useAuth } from '../../hooks/useAuth';
 
 const templateSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -15,11 +16,13 @@ const templateSchema = z.object({
   repoUrl: z.string().url('Please enter a valid GitHub repository URL'),
 });
 
+
 export function SubmitTemplate({ onClose }) {
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewImage, setPreviewImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(templateSchema),
@@ -43,20 +46,32 @@ export function SubmitTemplate({ onClose }) {
     if (!previewImage) return;
     setIsSubmitting(true);
     setError(null);
+    
+    // Convert image to base64
+    const reader = new FileReader();
+    const base64Promise = new Promise((resolve) => {
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(previewImage);
+    });
 
     try {
+      const base64Image = await base64Promise;
+      
       await createTemplate({
         ...data,
-        image: URL.createObjectURL(previewImage),
-        techStack: [],
+        image: base64Image,
+        author: user?.name || user?.email || 'Anonymous User',
+        techStack: ['React', 'TypeScript', 'Tailwind CSS'], // Default tech stack
         stars: 0,
-        author: 'Community'
+        status: 'pending'
       });
       
       onClose();
-      window.location.reload(); // Refresh to show new template
+      // Show success message
+      const event = new CustomEvent('templateCreated');
+      window.dispatchEvent(event);
     } catch (error) {
-      setError('Failed to submit template. Please try again.');
+      setError(error instanceof Error ? error.message : 'Failed to submit template. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -67,7 +82,6 @@ export function SubmitTemplate({ onClose }) {
       <div className="bg-white dark:bg-dark-200 rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto text-gray-900 dark:text-white">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Submit Your Template</h2>
-          <div>
           <button
             onClick={() => setShowHelp(!showHelp)}
             className="p-2 text-primary-500 hover:text-primary-600 rounded-full hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
@@ -75,14 +89,6 @@ export function SubmitTemplate({ onClose }) {
           >
             <HelpCircle className="w-5 h-5" />
           </button>
-          <button
-            onClick={onClose}
-            className="p-2 text-primary-500 hover:text-primary-600 rounded-full hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
-            title="Show help"
-          >
-            <CircleX className="w-5 h-5" />
-          </button>
-          </div>
         </div>
 
         {showHelp && (

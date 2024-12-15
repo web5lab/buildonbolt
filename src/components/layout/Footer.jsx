@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Twitter, Code2Icon } from 'lucide-react';
+import { Github, Twitter, Sparkles } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <Code2Icon className="w-5 h-5 text-primary-500 " />
+              <Sparkles className="w-5 h-5 text-primary-500 animate-pulse" />
               <span className="text-sm text-primary-600 dark:text-primary-400">
                 Built with{' '}
                 <span className="text-red-500 animate-pulse">❤</span>

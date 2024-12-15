@@ -1,6 +1,6 @@
 import React from 'react';
 import { SortAsc } from 'lucide-react';
-
+import { SortOption } from './types';
 
 
 
@@ -28,7 +28,6 @@ export function TemplateSort({ sortBy, onSortChange }) {
     </div>
   );
 }
-
 
 
 function SortButton({ active, children, onClick }) {

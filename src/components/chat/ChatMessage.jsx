@@ -1,9 +1,6 @@
 import React from 'react';
 
 
-
-
-
 export function ChatMessage({ message }) {
   return (
     <div

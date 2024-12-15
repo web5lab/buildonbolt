@@ -10,6 +10,7 @@ const app = new OAuthApp({
 });
 
 
+
 export async function authenticateWithGitHub() {
   const { url } = await app.getWebFlowAuthorizationUrl({
     scopes: ['public_repo', 'read:user'],

@@ -1,7 +1,6 @@
 import React from 'react';
 
 
-
 export function TechStack({ technologies }) {
   return (
     <div className="flex flex-wrap gap-1.5">

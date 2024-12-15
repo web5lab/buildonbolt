@@ -2,7 +2,6 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 
 
-
 export function SearchResults({ results }) {
   if (results.length === 0) return null;
 

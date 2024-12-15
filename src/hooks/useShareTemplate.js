@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 
-
 export function useShareTemplate() {
   const [isSharing, setIsSharing] = useState(false);
 
@@ -10,7 +9,7 @@ export function useShareTemplate() {
     return `${baseUrl}/template/${template.id}`;
   };
 
-  const shareTemplate = async (template)=> {
+  const shareTemplate = async (template) => {
     setIsSharing(true);
     try {
       const shareUrl = getTemplateUrl(template);

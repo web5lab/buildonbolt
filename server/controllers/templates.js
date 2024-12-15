@@ -46,7 +46,7 @@ export const createTemplate = async (req, res) => {
       const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       const fileName = `template-${Date.now()}.jpg`;
-      const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+      const uploadsDir = path.join(__dirname,  '..', 'uploads');
       
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });

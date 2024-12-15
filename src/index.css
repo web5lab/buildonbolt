@@ -1,3 +1,5 @@
+@import './styles/animations.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,16 +16,6 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
-}
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-gradient {
-  animation: gradient 3s ease infinite;
 }
 
 .bg-dot-pattern {

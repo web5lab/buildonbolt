@@ -1,18 +1,31 @@
 import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Share2, Flag, Rocket, User } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { ArrowLeft, Share2, Flag, Rocket, User, MessageSquare } from 'lucide-react';
 import { templates } from '../components/templates/data/templates';
 import { TechStack } from '../components/templates/TechStack';
 import { ShareTemplate } from '../components/templates/ShareTemplate';
 import { ReportTemplate } from '../components/templates/ReportTemplate';
+import { CommentList } from '../components/comments/CommentList.jsx';
+import { FavoriteButton } from '../components/favorites/FavoriteButton';
 
 export function TemplateDetails() {
   const { id } = useParams();
-  const navigate = useNavigate()
   const [showShareModal, setShowShareModal] = React.useState(false);
   const [showReportModal, setShowReportModal] = React.useState(false);
+  const [isFavorited, setIsFavorited] = React.useState(false);
+  const [comments, setComments] = React.useState([]);
 
   const template = templates.find(t => t.id === id);
+
+  const handleAddComment = async (content, parentId) => {
+    // TODO: Implement comment submission
+    console.log('Adding comment:', { content, parentId });
+  };
+
+  const handleToggleFavorite = async () => {
+    // TODO: Implement favorite toggle
+    setIsFavorited(!isFavorited);
+  };
 
   if (!template) {
     return (
@@ -21,16 +34,13 @@ export function TemplateDetails() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Template not found
           </h1>
-          <div
-            onClick={() => {
-
-              navigate('/')
-            }}
-            className="text-primary-600 z-30 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-2"
+          <Link
+            to="/"
+            className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to templates
-          </div>
+          </Link>
         </div>
       </div>
     );
@@ -47,7 +57,7 @@ export function TemplateDetails() {
           Back to templates
         </Link>
 
-        <div className="bg-white dark:bg-dark-200 rounded-2xl overflow-hidden border border-primary-100 max-w-[480px] dark:border-dark-300">
+        <div className="bg-white dark:bg-dark-200 rounded-2xl overflow-hidden border border-primary-100 dark:border-dark-300">
           <div className="relative aspect-video">
             <img
               src={template.image}
@@ -103,13 +113,32 @@ export function TemplateDetails() {
               <TechStack technologies={template.techStack} />
             </div>
 
-            <button
-              onClick={() => window.open('https://bolt.new', '_blank')}
-              className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 group transform transition-all duration-300 hover:scale-[1.02]"
-            >
-              <Rocket className="w-5 h-5 group-hover:animate-bounce" />
-              <span>Launch in Bolt.new</span>
-            </button>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <FavoriteButton
+                  isFavorited={isFavorited}
+                  onToggle={handleToggleFavorite}
+                  count={template.stars}
+                />
+                <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gray-100 dark:bg-dark-300 text-gray-600 dark:text-gray-300">
+                  <MessageSquare className="w-4 h-4" />
+                  {comments.length} Comments
+                </button>
+              </div>
+
+              <button
+                onClick={() => window.open('https://bolt.new', '_blank')}
+                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 group transform transition-all duration-300 hover:scale-[1.02]"
+              >
+                <Rocket className="w-5 h-5 group-hover:animate-bounce" />
+                <span>Launch in Bolt.new</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-8 p-8 bg-white dark:bg-dark-200 rounded-2xl border border-primary-100 dark:border-dark-300">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Comments</h2>
+            <CommentList comments={comments} onAddComment={handleAddComment} />
           </div>
         </div>
       </div>

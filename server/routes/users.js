@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateProfile, uploadAvatar } from '../controllers/users.js';
+import { serveAvatar, updateProfile, uploadAvatar } from '../controllers/users.js';
 import { authMiddleware } from '../middleware/auth.js';
 import multer from 'multer';
 import path from 'path';
@@ -36,6 +36,7 @@ router.post(
   upload.single('avatar'),
   (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
+      console.log("error");
       return res.status(400).json({ error: err.message });
     }
     if (err) {
@@ -45,3 +46,4 @@ router.post(
   },
   uploadAvatar
 );
+router.get('/avatar/:filename', serveAvatar);
